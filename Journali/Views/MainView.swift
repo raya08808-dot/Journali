@@ -2,6 +2,9 @@ import SwiftUI
 
 struct MainView: View {
     @StateObject private var viewModel = JournalViewModel()
+    @State private var showAddSheet = false
+    @State private var journalToDelete: JournalEntry?
+    @State private var journalToEdit: JournalEntry?
 
     var body: some View {
         ZStack {
@@ -17,8 +20,22 @@ struct MainView: View {
                     Spacer()
 
                     HStack(spacing: 20) {
-                        Image(systemName: "line.3.horizontal.decrease")
-                        Image(systemName: "plus")
+                        Menu {
+                            Button("Sort by Bookmark") {
+                                viewModel.sortOption = .bookmark
+                            }
+                            Button("Sort by Entry Date") {
+                                viewModel.sortOption = .date
+                            }
+                        } label: {
+                            Image(systemName: "line.3.horizontal.decrease")
+                        }
+
+                        Button {
+                            showAddSheet = true
+                        } label: {
+                            Image(systemName: "plus")
+                        }
                     }
                     .font(.system(size: 18))
                     .foregroundStyle(.white)
@@ -33,20 +50,37 @@ struct MainView: View {
                     EmptyStateView()
                     Spacer()
                 } else {
-                    ScrollView {
-                        VStack(spacing: 12) {
-                            ForEach(viewModel.journals) { journal in
-                                JournalCard(journal: journal)
+                    List {
+                        ForEach(viewModel.filteredJournals) { journal in
+                            JournalCard(
+                                journal: journal,
+                                onBookmark: {
+                                    viewModel.toggleBookmark(for: journal)
+                                },
+                                onTap: {
+                                    journalToEdit = journal
+                                }
+                            )
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                Button {
+                                    journalToDelete = journal
+                                } label: {
+                                    Image(systemName: "trash.fill")
+                                }
+                                .tint(Color(red: 0.99, green: 0.27, blue: 0.24))
                             }
                         }
-                        .padding(.horizontal)
                     }
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
                 }
             }
             .safeAreaInset(edge: .bottom) {
                 HStack {
                     Image(systemName: "magnifyingglass")
-                    Text("Search")
+                    TextField("Search", text: $viewModel.searchText)
                     Spacer()
                     Image(systemName: "mic.fill")
                 }
@@ -56,6 +90,28 @@ struct MainView: View {
                 .background(Color(red: 0.11, green: 0.11, blue: 0.12), in: Capsule())
                 .padding(.horizontal)
             }
+        }
+        .sheet(isPresented: $showAddSheet) {
+            EditJournalView(viewModel: viewModel)
+        }
+        .sheet(item: $journalToEdit) { journal in
+            EditJournalView(viewModel: viewModel, journal: journal)
+        }
+        .alert("Delete Journal?", isPresented: Binding(
+            get: { journalToDelete != nil },
+            set: { if !$0 { journalToDelete = nil } }
+        )) {
+            Button("Cancel", role: .cancel) {
+                journalToDelete = nil
+            }
+            Button("Delete", role: .destructive) {
+                if let journal = journalToDelete {
+                    viewModel.deleteJournal(journal)
+                }
+                journalToDelete = nil
+            }
+        } message: {
+            Text("Are you sure you want to delete this journal?")
         }
     }
 }

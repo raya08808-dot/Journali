@@ -2,6 +2,8 @@ import SwiftUI
 
 struct JournalCard: View {
     let journal: JournalEntry
+    let onBookmark: () -> Void
+    let onTap: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -12,8 +14,14 @@ struct JournalCard: View {
 
                 Spacer()
 
-                Image(systemName: journal.isBookmarked ? "bookmark.fill" : "bookmark")
-                    .foregroundStyle(Color(red: 0.69, green: 0.6, blue: 0.99))
+                Button {
+                    onBookmark()
+                } label: {
+                    Image(systemName: journal.isBookmarked ? "bookmark.fill" : "bookmark")
+                        .foregroundStyle(Color(red: 0.69, green: 0.6, blue: 0.99))
+                        .padding(8)
+                }
+                .buttonStyle(.borderless)
             }
 
             Text(journal.date.formatted(date: .numeric, time: .omitted))
@@ -28,11 +36,19 @@ struct JournalCard: View {
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color(red: 0.11, green: 0.11, blue: 0.12), in: RoundedRectangle(cornerRadius: 20))
+        .contentShape(RoundedRectangle(cornerRadius: 20))
+        .onTapGesture {
+            onTap()
+        }
     }
 }
 
 #Preview {
-    JournalCard(journal: JournalEntry(title: "My Birthday", content: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque volutpat mattis eros.", isBookmarked: true))
-        .padding()
-        .background(Color.black)
+    JournalCard(
+        journal: JournalEntry(title: "My Birthday", content: "Lorem ipsum dolor sit amet.", isBookmarked: true),
+        onBookmark: {},
+        onTap: {}
+    )
+    .padding()
+    .background(Color.black)
 }
