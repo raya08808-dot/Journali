@@ -22,66 +22,70 @@ struct EditJournalView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                Button {
-                    if hasChanges {
-                        showDiscardAlert = true
-                    } else {
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 16) {
+                TextField("Title", text: $title)
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+
+                Text((journal?.date ?? Date()).formatted(date: .numeric, time: .omitted))
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+
+                ZStack(alignment: .topLeading) {
+                    TextEditor(text: $content)
+                        .scrollContentBackground(.hidden)
+
+                    if content.isEmpty {
+                        Text("Type your Journal...")
+                            .foregroundStyle(.secondary)
+                            .padding(.top, 8)
+                            .padding(.leading, 5)
+                            .allowsHitTesting(false)
+                    }
+                }
+            }
+            .padding()
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        if hasChanges {
+                            showDiscardAlert = true
+                        } else {
+                            dismissAction()
+                        }
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        if let journal {
+                            viewModel.updateJournal(journal, title: title, content: content)
+                        } else {
+                            viewModel.addJournal(title: title, content: content)
+                        }
                         dismissAction()
+                    } label: {
+                        Image(systemName: "checkmark")
                     }
-                } label: {
-                    Image(systemName: "xmark")
-                        .foregroundStyle(.white)
-                        .frame(width: 36, height: 36)
-                        .background(Color(red: 0.2, green: 0.2, blue: 0.22), in: Circle())
+                    .tint(.appAccent)
                 }
-
-                Spacer()
-
-                Button {
-                    if let journal {
-                        viewModel.updateJournal(journal, title: title, content: content)
-                    } else {
-                        viewModel.addJournal(title: title, content: content)
-                    }
+            }
+            .alert(
+                "Are you sure you want to discard changes on this journal?",
+                isPresented: $showDiscardAlert
+            ) {
+                Button("Discard Changes", role: .destructive) {
                     dismissAction()
-                } label: {
-                    Image(systemName: "checkmark")
-                        .foregroundStyle(.white)
-                        .frame(width: 36, height: 36)
-                        .background(Color(red: 0.5, green: 0.51, blue: 1.0), in: Circle())
                 }
+                Button("Keep Editing", role: .cancel) { }
             }
-
-            TextField("Title", text: $title)
-                .font(.system(size: 34, weight: .bold))
-                .foregroundStyle(.white)
-
-            Text((journal?.date ?? Date()).formatted(date: .numeric, time: .omitted))
-                .font(.system(size: 14))
-                .foregroundStyle(.gray)
-
-            TextEditor(text: $content)
-                .font(.system(size: 18))
-                .foregroundStyle(.white)
-                .scrollContentBackground(.hidden)
-        }
-        .padding()
-        .background(Color(red: 0.11, green: 0.11, blue: 0.12))
-        .confirmationDialog(
-            "Are you sure you want to discard changes on this journal?",
-            isPresented: $showDiscardAlert,
-            titleVisibility: .visible
-        ) {
-            Button("Discard Changes", role: .destructive) {
-                dismissAction()
-            }
-            Button("Keep Editing", role: .cancel) { }
         }
     }
 }
 
 #Preview {
     EditJournalView(viewModel: JournalViewModel())
+        .preferredColorScheme(.dark)
 }

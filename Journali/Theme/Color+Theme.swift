@@ -1,18 +1,8 @@
-//
-//  Color+Theme.swift
-//  Journali
-//
-//  Created by raya alharbi on 01/06/1448 AH.
-//
-
 import SwiftUI
 
-struct Color_Theme: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
-}
-
-#Preview {
-    Color_Theme()
+extension Color {
+    static let appAccent = Color(red: 0.50, green: 0.51, blue: 1.0)
+    static let appTitle = Color(red: 0.69, green: 0.60, blue: 0.99)
+    static let appCard = Color(UIColor.secondarySystemBackground)
+    static let appDestructive = Color(red: 0.99, green: 0.27, blue: 0.24)
 }

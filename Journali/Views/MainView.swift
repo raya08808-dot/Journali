@@ -7,48 +7,10 @@ struct MainView: View {
     @State private var journalToEdit: JournalEntry?
 
     var body: some View {
-        ZStack {
-            Color.black
-                .ignoresSafeArea()
-
-            VStack {
-                HStack {
-                    Text("Journal")
-                        .font(.system(size: 34, weight: .bold))
-                        .foregroundStyle(.white)
-
-                    Spacer()
-
-                    HStack(spacing: 20) {
-                        Menu {
-                            Button("Sort by Bookmark") {
-                                viewModel.sortOption = .bookmark
-                            }
-                            Button("Sort by Entry Date") {
-                                viewModel.sortOption = .date
-                            }
-                        } label: {
-                            Image(systemName: "line.3.horizontal.decrease")
-                        }
-
-                        Button {
-                            showAddSheet = true
-                        } label: {
-                            Image(systemName: "plus")
-                        }
-                    }
-                    .font(.system(size: 18))
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(Color(red: 0.11, green: 0.11, blue: 0.12), in: Capsule())
-                }
-                .padding(.horizontal)
-
+        NavigationStack {
+            Group {
                 if viewModel.journals.isEmpty {
-                    Spacer()
                     EmptyStateView()
-                    Spacer()
                 } else {
                     List {
                         ForEach(viewModel.filteredJournals) { journal in
@@ -69,27 +31,36 @@ struct MainView: View {
                                 } label: {
                                     Image(systemName: "trash.fill")
                                 }
-                                .tint(Color(red: 0.99, green: 0.27, blue: 0.24))
+                                .tint(.appDestructive)
                             }
                         }
                     }
                     .listStyle(.plain)
-                    .scrollContentBackground(.hidden)
                 }
             }
-            .safeAreaInset(edge: .bottom) {
-                HStack {
-                    Image(systemName: "magnifyingglass")
-                    TextField("Search", text: $viewModel.searchText)
-                    Spacer()
-                    Image(systemName: "mic.fill")
+            .navigationTitle("Journal")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
+                        Button("Sort by Bookmark") {
+                            viewModel.sortOption = .bookmark
+                        }
+                        Button("Sort by Entry Date") {
+                            viewModel.sortOption = .date
+                        }
+                    } label: {
+                        Image(systemName: "line.3.horizontal.decrease")
+                    }
                 }
-                .foregroundStyle(.gray)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-                .background(Color(red: 0.11, green: 0.11, blue: 0.12), in: Capsule())
-                .padding(.horizontal)
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showAddSheet = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                }
             }
+            .searchable(text: $viewModel.searchText)
         }
         .sheet(isPresented: $showAddSheet) {
             EditJournalView(viewModel: viewModel)
@@ -118,4 +89,5 @@ struct MainView: View {
 
 #Preview {
     MainView()
+        .preferredColorScheme(.dark)
 }

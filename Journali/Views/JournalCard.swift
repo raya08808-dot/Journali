@@ -9,8 +9,9 @@ struct JournalCard: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text(journal.title)
-                    .font(.system(size: 20, weight: .semibold))
-                    .foregroundStyle(Color(red: 0.69, green: 0.6, blue: 0.99))
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(Color.appTitle)
 
                 Spacer()
 
@@ -18,24 +19,24 @@ struct JournalCard: View {
                     onBookmark()
                 } label: {
                     Image(systemName: journal.isBookmarked ? "bookmark.fill" : "bookmark")
-                        .foregroundStyle(Color(red: 0.69, green: 0.6, blue: 0.99))
+                        .foregroundStyle(Color.appTitle)
                         .padding(8)
                 }
                 .buttonStyle(.borderless)
             }
 
             Text(journal.date.formatted(date: .numeric, time: .omitted))
-                .font(.system(size: 12))
-                .foregroundStyle(.gray)
+                .font(.caption)
+                .foregroundStyle(.secondary)
 
             Text(journal.content)
-                .font(.system(size: 14))
-                .foregroundStyle(.white)
+                .font(.subheadline)
+                .foregroundStyle(.primary)
                 .lineLimit(4)
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(red: 0.11, green: 0.11, blue: 0.12), in: RoundedRectangle(cornerRadius: 20))
+        .background(Color.appCard, in: RoundedRectangle(cornerRadius: 20))
         .contentShape(RoundedRectangle(cornerRadius: 20))
         .onTapGesture {
             onTap()
@@ -50,5 +51,5 @@ struct JournalCard: View {
         onTap: {}
     )
     .padding()
-    .background(Color.black)
+    .preferredColorScheme(.dark)
 }

@@ -20,6 +20,7 @@ struct RootView: View {
                 }
             }
         }
+        .preferredColorScheme(.dark)
     }
 }
 

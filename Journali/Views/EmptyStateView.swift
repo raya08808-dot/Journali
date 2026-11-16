@@ -6,17 +6,17 @@ struct EmptyStateView: View {
             Image(.soso2)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 160)
+                .frame(maxWidth: 200)
 
             Text("Begin Your Journal")
-                .font(.system(size: 22, weight: .bold))
-                .foregroundStyle(Color(red: 0.69, green: 0.6, blue: 0.99))
+                .font(.title3)
+                .fontWeight(.bold)
+                .foregroundStyle(Color.appTitle)
 
             Text("Craft your personal diary, tap the plus icon to begin")
-                .font(.system(size: 16, weight: .light))
-                .foregroundStyle(.white)
+                .font(.callout)
                 .multilineTextAlignment(.center)
-                .frame(width: 250)
+                .padding(.horizontal, 60)
         }
     }
 }
