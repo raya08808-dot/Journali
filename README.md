@@ -13,7 +13,7 @@ Journali is a personal journaling app for iOS. It lets you write, organize, and 
 - Sort entries by bookmark or by entry date
 - Search journals by title or content
 - Discard changes alert when closing an edited entry
-- Journals are saved on the device and remain after closing the app
+
 
 ## Technologies Used
 
